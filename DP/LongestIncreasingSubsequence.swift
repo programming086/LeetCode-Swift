@@ -1,23 +1,39 @@
 /**
  * Question Link: https://leetcode.com/problems/longest-increasing-subsequence/
- * Primary idea: Dynamic Programming, transition function is len[i] = max(len[i], len[j] + 1)
- * Time Complexity: O(n^2), Space Complexity: O(n)
+ * Primary idea: Dynamic Programming, update the array which ends at current index using binary search
+ * Time Complexity: O(nlogn), Space Complexity: O(n)
  */
 
 class LongestIncreasingSubsequence {
-    func lengthOfLIS(nums: [Int]) -> Int {
-        var length_global = 0
-        var length_current = [Int](count: nums.count, repeatedValue: 1)
+    func lengthOfLIS(_ nums: [Int]) -> Int {
+        var res = [nums[0]]
         
-        for i in 0..<nums.count {
-            for j in 0..<i {
-                if nums[i] > nums[j] {
-                    length_current[i] = max(length_current[i], length_current[j] + 1)
-                }
+        for i in 1..<nums.count {
+            if res.last! < nums[i] {
+                res.append(nums[i])
+            } else {
+                res[binarySearch(res, nums[i])] = nums[i]
             }
-            length_global = max(length_global, length_current[i])
         }
         
-        return length_global
+        return res.count
+    }
+
+    private func binarySearch(_ num: Int, _ res: [Int]) -> Int {
+        var l = 0, r = res.count - 1
+
+        while l < r {
+            let mid = (r - l) / 2 + l
+
+            if res[mid] == num {
+                return mid
+            } else if res[mid] > num {
+                r = mid
+            } else {
+                l = mid + 1
+            }
+        }
+
+        return l
     }
 }

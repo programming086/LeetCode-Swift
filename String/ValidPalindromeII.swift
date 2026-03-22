@@ -1,32 +1,40 @@
 /**
  * Question Link: https://leetcode.com/problems/valid-palindrome-ii/
- * Primary idea: Take advantage of validPalindrome, and jump left and right separately to get correct character should be deleted
+ * Primary idea: Two pointers. Move left and right when they are equal or cannot separate by moving either side, otherwise move one direction and update the flag.
  *
- * Time Complexity: O(n), Space Complexity: O(n)
+ * Time Complexity: O(n), Space Complexity: O(1)
  *
  */
 
 class ValidPalindromeII {
     func validPalindrome(_ s: String) -> Bool {
-        let array = Array(s)
-        return isPalindrome(array, 0, array.count - 1)
-    }
-    
-    fileprivate func isPalindrome(_ array: [Character], _ i: Int, _ j: Int, alreadyRemoved: Bool = false) -> Bool {
-        var i = i, j = j
+        var i = 0, j = s.count - 1, isDeleted = false
+        let s = Array(s)
+
         while i < j {
-            if array[i] != array[j] {
-                if alreadyRemoved {
+            if s[i] != s[j] {
+                if isDeleted {
                     return false
                 } else {
-                    return isPalindrome(array, i + 1, j, alreadyRemoved: true) || 
-                           isPalindrome(array, i, j - 1, alreadyRemoved: true)
+                    if s[i + 1] == s [j] && s[j - 1] == s[i] {
+                        i += 1
+                        j -= 1
+                    } else if s[i + 1] == s[j] {
+                        i += 1
+                        isDeleted = true
+                    } else if s[j - 1] == s[i] {
+                        j -= 1
+                        isDeleted = true
+                    } else {
+                        return false
+                    }
                 }
             } else {
                 i += 1
                 j -= 1
             }
         }
+
         return true
     }
 }

@@ -6,20 +6,35 @@
  */
 
 class ValidSudoku {
-    let size = 9
-
-    func isValidSudoku(board: [[Character]]) -> Bool {
-        return _isRowValid(board) && _isColValid(board) && _isSquareValid(board)
-    }
-    
-    private func _isRowValid(board: [[Character]]) -> Bool {
-        var visited = Array(count: size, repeatedValue: false)
+    func isValidSudoku(_ board: [[Character]]) -> Bool {          
+        let len = 9
         
-        for i in 0..<size {
-            visited = Array(count: size, repeatedValue: false)
-            for j in 0..<size {
-                if !_isValidChar(board[i][j], &visited) {
-                    return false
+        var rowSet = Array(repeating: Set<Character>(), count: len)
+        var colSet = Array(repeating: Set<Character>(), count: len)
+        var boxSet = Array(repeating: Set<Character>(), count: len)
+        
+        for i in 0..<len {    
+            for j in 0..<len {
+                let currentChar = board[i][j]
+                
+                if currentChar == "." {
+                    continue
+                }
+                
+                // check row
+                if !isValid(&rowSet[i], currentChar) {
+                    return false 
+                }
+                
+                // check column
+                if !isValid(&colSet[j], currentChar) {
+                    return false 
+                }
+                
+                // check sub-box
+                let idx = 3 * (i / 3) + j / 3
+                if !isValid(&boxSet[idx], currentChar) {
+                    return false 
                 }
             }
         }
@@ -27,55 +42,12 @@ class ValidSudoku {
         return true
     }
     
-    private func _isColValid(board: [[Character]]) -> Bool {
-        var visited = Array(count: size, repeatedValue: false)
-
-        for i in 0..<size {
-            visited = Array(count: size, repeatedValue: false)
-            for j in 0..<size {
-                if !_isValidChar(board[j][i], &visited) {
-                    return false
-                }
-            }
+    private func isValid(_ set: inout Set<Character>, _ char: Character) -> Bool {
+        if set.contains(char) {
+            return false
+        } else {
+            set.insert(char)
+            return true
         }
-        
-        return true
-    }
-    
-    private func _isSquareValid(board: [[Character]]) -> Bool {
-        var visited = Array(count: size, repeatedValue: false)
-        
-        for i in 0.stride(to: size, by: 3) {
-            for j in 0.stride(to: size, by: 3) {
-                visited = Array(count: size, repeatedValue: false)
-                for m in i..<i + 3 {
-                    for n in j..<j + 3 {
-                        if !_isValidChar(board[m][n], &visited) {
-                            return false
-                        }
-                    }
-                }
-            }
-        }
-        
-        return true
-    }
-    
-    private func _isValidChar(char: Character, inout _ visited: [Bool]) -> Bool {
-        let current = String(char)
-        
-        if current != "." {
-            if let num = Int(current){
-                if num < 1 || num > 9 || visited[num - 1] {
-                    return false
-                } else {
-                    visited[num - 1] = true
-                }
-            } else {
-                return false
-            }
-        } 
-        
-        return true
     }
 }
